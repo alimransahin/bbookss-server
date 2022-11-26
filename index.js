@@ -9,7 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_password}@cluster0.vgokw2y.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -30,6 +29,12 @@ async function run(){
             const result=await usersCollection.insertOne(userInfo);
             res.send(result);
 
+        })
+        app.get('/users/:email', async(req,res)=>{
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.find(query).toArray();
+            res.send(user);
         })
     }
     finally{
