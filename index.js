@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port=process.env.PORT || 5000;
 const app=express();
@@ -35,6 +35,44 @@ async function run(){
             const query = { email }
             const user = await usersCollection.find(query).toArray();
             res.send(user);
+        })
+
+        app.get('/allusers/:userType', async (req, res) => {
+            const userType = req.params.userType;
+            const query = { userType }
+            const user = await usersCollection.find(query).toArray();
+            res.send(user);
+        })
+
+        app.delete('/allusers/delete/:id', async (req,res)=>{
+            const id=req.params.id;
+            const query={_id:ObjectId(id)}
+            const result=await usersCollection.deleteOne(query);
+            res.send(result);
+        })
+        app.put('/allusers/makeadmin/:id', async (req,res)=>{
+            const id=req.params.id;
+            const filter={_id:ObjectId(id)};
+            const options={upsert:true};
+            const updateDoc={
+                $set:{
+                    userType:'admin'
+                }
+            }
+            const result=await usersCollection.updateOne(filter,updateDoc,options);
+            res.send(result);
+        })
+        app.put('/allusers/verify/:id', async (req,res)=>{
+            const id=req.params.id;
+            const filter={_id:ObjectId(id)};
+            const options={upsert:true};
+            const updateDoc={
+                $set:{
+                    status:'Verified'
+                }
+            }
+            const result=await usersCollection.updateOne(filter,updateDoc,options);
+            res.send(result);
         })
     }
     finally{
