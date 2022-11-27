@@ -18,11 +18,38 @@ async function run(){
         const productsCollection = client.db('bbookss').collection('Products');
 
         //products
+        app.put('/advertise/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    advertise: 'advertise' 
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+        app.get('/myProducts/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { sellerEmail:email}
+            const books = await productsCollection.find(query).toArray();
+            res.send(books);
+        })
+        
         app.post('/addproducts', async (req, res) => {
             const book = req.body;
             const result = await productsCollection.insertOne(book);
             res.send(result);
 
+        })
+        app.delete(`/products/delete/:id`, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            console.log(query);
+            const result = await productsCollection.deleteOne(query);
+            console.log(result);
+            res.send(result);
         })
         
         // categories
