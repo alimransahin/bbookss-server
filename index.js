@@ -18,7 +18,7 @@ async function run(){
         const productsCollection = client.db('bbookss').collection('Products');
 
         //products
-        app.put('/advertise/:id', async (req, res) => {
+        app.put('/myProducts/advertise/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
@@ -27,8 +27,15 @@ async function run(){
                     advertise: 'advertise' 
                 }
             }
-            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            const result = await productsCollection.updateOne(filter, updateDoc, options);
             res.send(result);
+        })
+
+        app.get('/myProducts/:advertise', async (req, res) => {
+            const advertise = req.params.advertise;
+            const query = { advertise }
+            const books = await productsCollection.find(query).toArray();
+            res.send(books);
         })
         app.get('/myProducts/:email', async (req, res) => {
             const email = req.params.email;
