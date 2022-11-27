@@ -15,6 +15,15 @@ async function run(){
     try{
         const categoriesCollection = client.db('bbookss').collection('categories');
         const usersCollection = client.db('bbookss').collection('users');
+        const productsCollection = client.db('bbookss').collection('Products');
+
+        //products
+        app.post('/addproducts', async (req, res) => {
+            const book = req.body;
+            const result = await productsCollection.insertOne(book);
+            res.send(result);
+
+        })
         
         // categories
         app.get('/categories', async(req,res)=>{
